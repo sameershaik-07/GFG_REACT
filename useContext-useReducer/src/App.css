@@ -1,0 +1,91 @@
+/* App.css */
+
+/* Reset basic margin/padding */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+/* Main heading */
+h1 {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 2rem;
+  color: #222;
+}
+
+/* Filters container */
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px auto;
+  padding: 16px;
+}
+
+.filter-bar input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 180px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filter-bar input:focus {
+  border-color: #007bff;
+}
+
+/* Product list container */
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  padding: 0 20px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Individual product card */
+.product-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  background-color: #fcfcfc;
+}
+
+.product-card h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #1e1e1e;
+}
+
+.product-card p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.product-card p strong {
+  color: #000;
+}
+
+/* No products found message */
+.product-list p {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 16px;
+  color: #999;
+}

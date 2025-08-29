@@ -5,6 +5,9 @@ export const Count = () => {
   const intialCount = {
     count: 0
   };
+
+  // const {co} = intialCount;
+  // console.log(co);
   const [{ count }, countDispatch] = useReducer(countReducer, intialCount);
   
   return (

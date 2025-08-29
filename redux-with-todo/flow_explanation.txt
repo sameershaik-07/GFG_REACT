@@ -1,0 +1,117 @@
+Excellent question. Now that I've reviewed the files, I can map out the entire flow for you. Here’s how your src files connect and how function calls propagate through them:
+
+### 1. Application Entry Point: main.jsx
+
+This is where your application starts.
+
+```javascript
+// src/main.jsx
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { store } from "./store"; // Imports the Redux store
+import App from "./App.jsx";     // Imports the main App component
+
+// Renders the entire application
+createRoot(document.getElementById("root")).render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+```
+
+-   **`createRoot(...).render(...)`**: This is the standard way to start a React 18 application. It tells React to render your components into the `<div id="root"></div>` element in your `index.html`.
+-   **`<Provider store={store}>`**: This component comes from `react-redux`. It wraps your entire `<App />` component, making the Redux `store` (which you imported) available to any component that needs it, no matter how deeply nested it is.
+
+### 2. Redux Store Configuration: store/index.js
+
+This file creates the single source of truth for your application's state.
+
+```javascript
+// src/store/index.js
+import { configureStore } from "@reduxjs/toolkit";
+import todoReducer from '../slices/todoSlice'; // Imports the reducer
+
+export const store = configureStore({
+  reducer: {
+    todos: todoReducer, // Connects the reducer to the store
+  },
+});
+```
+
+-   **`configureStore`**: This function from Redux Toolkit simplifies store setup.
+-   **`reducer: { todos: todoReducer }`**: This is the crucial part. You are telling Redux that you have a "slice" of state named `todos`, and the `todoReducer` function is responsible for all updates to this part of the state. This is why in your components, you'll access the todo state with `state.todos`.
+
+### 3. State Logic Definition: slices/todoSlice.js
+
+This is where you define the state structure and the logic for updating it.
+
+```javascript
+// src/slices/todoSlice.js
+import { createSlice } from "@reduxjs/toolkit";
+
+const todoSlice = createSlice({
+  name: "todo",
+  initialState: { todos: [] },
+  reducers: {
+    addTodo: (state, action) => { /* ... */ },
+    deleteTodo: (state, action) => { /* ... */ },
+  },
+});
+
+// Exports the action creators (the functions you call)
+export const { addTodo, deleteTodo } = todoSlice.actions;
+
+// Exports the reducer function (the function Redux uses internally)
+export default todoSlice.reducer;
+```
+
+-   **`createSlice`**: This powerful function automatically generates:
+    -   **Action Creators**: Functions like `addTodo` and `deleteTodo` that you can call in your components. When you call `addTodo({ id: 1, text: 'Buy milk' })`, it creates an "action" object like `{ type: 'todo/addTodo', payload: { id: 1, text: 'Buy milk' } }`.
+    -   **A Reducer Function**: A single function (`todoSlice.reducer`) that knows how to handle the actions created above. It's exported as the default.
+
+### 4. UI and Interaction: App.jsx
+
+This is your user interface. It reads data from the Redux store and sends (dispatches) actions to it when the user interacts with the UI.
+
+```javascript
+// src/App.jsx
+import { useDispatch, useSelector } from "react-redux";
+import { addTodo, deleteTodo } from "./slices/todoSlice"; // Imports the actions
+
+function App() {
+  const dispatch = useDispatch();
+  // Reads data from the store
+  const { todos } = useSelector((state) => state.todos);
+
+  const onAddClick = () => {
+    // Dispatches an action to the store
+    dispatch(addTodo({ id: uuid(), todo: inputText }));
+  };
+
+  const onDeleteClick = (id) => {
+    // Dispatches another action
+    dispatch(deleteTodo(id));
+  };
+
+  // ... JSX to render the UI ...
+}
+```
+
+-   **`useSelector((state) => state.todos)`**: This hook "selects" a piece of the Redux state. It subscribes your component to updates, so if the `todos` data changes in the store, your `App` component will automatically re-render.
+-   **`useDispatch()`**: This hook gives you the `dispatch` function.
+-   **`dispatch(addTodo(...))`**: This is how you trigger a state change.
+    1.  You call the `addTodo` action creator with a payload.
+    2.  It creates an action object.
+    3.  The `dispatch` function sends this action to the Redux store.
+    4.  The store passes the action to the `todoReducer`.
+    5.  The `todoReducer` sees the action type (`'todo/addTodo'`), runs the corresponding logic to update the state, and returns the new state.
+    6.  `useSelector` detects the state change, and your component re-renders with the new list of todos.
+
+### Summary Flow
+
+1.  **`main.jsx`** renders `<App />` inside a `<Provider>` which holds the `store`.
+2.  The **`store`** is configured with a `todos` reducer from **`todoSlice.js`**.
+3.  **`App.jsx`** uses `useSelector` to read the initial `todos` array from the store.
+4.  When you type in the input and click "Add", the `onAddClick` function `dispatches` the `addTodo` action.
+5.  The reducer inside **`todoSlice.js`** catches this action, adds the new todo to the state array, and returns the new state.
+6.  The **`App.jsx`** component sees the state has changed (thanks to `useSelector`) and re-renders to display the new todo.

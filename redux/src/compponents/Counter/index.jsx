@@ -15,8 +15,9 @@ export const Counter = () => {
 
   return (
     <>
-      <button onClick={onUpClick}>Up</button>
+      <button onClick={onUpClick}>Up</button> <hr />
       <span>{count}</span>
+      <hr />
       <button onClick={onDownClick}>Down</button>
     </>
   );

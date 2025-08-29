@@ -1,5 +1,5 @@
 export const countReducer = (state , action)=>{
-  switch(action.type){
+  switch(action.type  ){
     case 'INC' : return{
       ...state , count : state.count+1
     }
